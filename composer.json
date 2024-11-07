@@ -1,0 +1,19 @@
+{
+    "name": "samyb/calculatrice",
+    "description": "Calculatrice en PHP avec architecture logicielle, prenant en charge plusieurs opérations via la ligne de commande.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Samy Boudaoud"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^1.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
