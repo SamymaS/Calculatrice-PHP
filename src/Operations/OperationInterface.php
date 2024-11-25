@@ -2,15 +2,15 @@
 namespace App\Operations;
 
 /**
- * Interface pour toutes les opérations de calcul
+ * Interface pour les opérations mathématiques.
  */
 interface OperationInterface {
     /**
-     * Méthode pour effectuer le calcul
+     * Effectue une opération entre deux opérandes.
      *
-     * @param mixed $a Première valeur
-     * @param mixed $b Deuxième valeur
-     * @return mixed Résultat de l'opération
+     * @param float|int $a Première opérande
+     * @param float|int $b Deuxième opérande
+     * @return float|int Résultat de l'opération
      */
     public function calculate($a, $b);
 }

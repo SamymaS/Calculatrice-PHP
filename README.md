@@ -3,137 +3,128 @@
 
 ## Description
 
-Ce projet consiste à développer une calculatrice en ligne de commande en PHP, en utilisant une architecture logicielle propre avec Composer et des principes .
+Ce projet consiste à développer une calculatrice en ligne de commande en PHP, en utilisant une architecture logicielle propre, respectant les principes **SOLID** et **DRY**, tout en tirant parti de la notation polonaise inversée (RPN) pour gérer les priorités des opérateurs et les parenthèses. Le projet utilise **Composer** pour l'autoloading et suit une structure modulaire et extensible.
+
+---
 
 ## Arborescence du Projet
 
-L'arborescence du projet est la suivante :
-
 ```
 Calculatrice/
-├── public/
-├── src/
-│   ├── Calculator.php
-│   └── Operations/
+├── public/                  # Dossier destiné aux éventuels fichiers accessibles publiquement
+├── src/                     # Code source principal
+│   ├── RPNCalculator.php    # Gestion des calculs via notation polonaise inversée
+│   ├── README_RPN.md        # En savoir plus sur la Notation Polonaise Inversée (RPN)
+│   └── Operations/          # Modules pour chaque type d'opération mathématique
 │       ├── OperationInterface.php
 │       ├── Addition.php
 │       ├── Subtraction.php
 │       ├── Multiplication.php
 │       └── Division.php
-├── Tests/
-├── Vendor/
-├── calc.php
-├── composer.json
-├── composer.lock
-├── plan.txt
-└── .gitignore
+├── Tests/                   # (Optionnel) Tests unitaires et fonctionnels
+├── Vendor/                  # Dépendances gérées par Composer
+├── calc.php                 # Point d'entrée pour exécuter la calculatrice
+├── composer.json            # Configuration de Composer
+├── composer.lock            # Verrouillage des dépendances de Composer
+└── .gitignore               # Exclusion de fichiers inutiles pour Git
 ```
 
-- **`public/`** : Dossier destiné aux éventuels fichiers accessibles publiquement (non utilisé dans ce projet).
-- **`src/`** : Contient le code source principal, y compris la classe `Calculator.php` et les opérations de calcul.
-- **`Tests/`** : Contient les tests unitaires (si ajoutés ultérieurement et non utilisé dans ce projet).
-- **`Vendor/`** : Contient les dépendances installées par Composer.
-- **`calc.php`** : Point d'entrée pour exécuter la calculatrice en ligne de commande.
-- **`composer.json`** et **`composer.lock`** : Fichiers de configuration de Composer.
-- **`.gitignore`** : Fichier pour exclure certains fichiers et dossiers de Git, comme `vendor/`.
+---
+
+## Fonctionnalités Implémentées
+
+1. **Gestion des Opérations Mathématiques de Base** :
+   - Addition (`+`)
+   - Soustraction (`-`)
+   - Multiplication (`*`)
+   - Division (`/`), avec gestion des erreurs pour la division par zéro.
+
+2. **Support des Priorités et Parenthèses** :
+   - Utilisation de la notation polonaise inversée pour gérer les priorités (`*`, `/` avant `+`, `-`).
+   - Prise en charge des expressions avec parenthèses imbriquées.
+
+3. **Architecture Modulaire et Extensible** :
+   - Chaque opération (`Addition`, `Subtraction`, etc.) est implémentée comme une classe distincte respectant une interface commune (`OperationInterface`).
+   - Possibilité d'ajout de nouvelles opérations mathématiques (comme les puissances ou les fonctions trigonométriques).
+
+4. **Validation des Expressions** :
+   - Vérification des caractères valides.
+   - Vérification des parenthèses équilibrées.
+
+5. **CLI pour le Calcul** :
+   - Permet de calculer des expressions directement depuis la ligne de commande, par exemple :
+     ```bash
+     php calc.php "3 + 4 * 2 / ( 1 - 5 )"
+     ```
+
+---
 
 ## Étapes de Conception et de Réalisation
 
 ### 1. Initialisation du Projet avec Composer
 
-1. **Créer un nouveau projet avec Composer** :
-   - Exécutez `composer init` pour initialiser Composer dans le dossier du projet et configurer le fichier `composer.json`.
-   - Fournissez les informations requises, telles que le nom du projet, la description, le type, l'auteur, la licence, etc.
-   - Choisissez `project` comme type de package, et `MIT` (ou autre) comme licence.
+- **Créer le projet** : Exécuter `composer init` pour générer `composer.json`.
+- **Configurer l'autoloading** :
+  ```json
+  "autoload": {
+      "psr-4": {
+          "App\": "src/"
+      }
+  }
+  ```
+- **Générer l'autoloader** : `composer dump-autoload`.
 
-2. **Ajouter l'autoloading PSR-4** :
-   - Dans `composer.json`, ajoutez la configuration suivante sous la clé `"autoload"` :
-     ```json
-     "autoload": {
-         "psr-4": {
-             "App\": "src/"
-         }
-     }
-     ```
-   - Cela indique à Composer de charger automatiquement les classes sous le namespace `App` à partir du dossier `src/`.
+### 2. Implémentation des Opérations Mathématiques
 
-3. **Générer l’autoloader** :
-   - Exécutez `composer dump-autoload` pour créer le fichier `vendor/autoload.php`, qui chargera automatiquement les classes.
-   - Cela permet d'importer les classes sans utiliser `require` ou `include` pour chaque fichier.
+- Interface commune `OperationInterface.php` :
+  ```php
+  public function calculate($a, $b);
+  ```
+- Implémentation des opérations :
+  - `Addition.php`, `Subtraction.php`, `Multiplication.php`, `Division.php`.
 
-### 2. Création de l'Interface des Opérations
+### 3. Classe `RPNCalculator`
 
-1. **Interface `OperationInterface.php`** :
-   - Créez un fichier `OperationInterface.php` dans `src/Operations/`.
-   - Cette interface définit une méthode `calculate` pour standardiser et avoir un modèle pour les classes de calcul.
+- Convertit les expressions infixes en RPN.
+- Évalue les expressions RPN.
 
-### 3. Création des Classes d'Opérations
+### 4. Fichier Principal `calc.php`
 
-1. **Créer les fichiers d'opérations** :
-   - Créez les fichiers `Addition.php`, `Subtraction.php`, `Multiplication.php`, et `Division.php` dans `src/Operations/`.
-   - Chaque classe implémente `OperationInterface` et définit la logique de calcul pour chaque opération (`+`, `-`, `*`, `/`).
+- Point d'entrée pour exécuter les calculs depuis la ligne de commande.
 
-2. **Implémenter chaque opération** :
-   - Exemple pour l'addition (`Addition.php`) :
-     ```php
-     <?php
-     namespace App\Operations;
+---
 
-     class Addition implements OperationInterface {
-         public function calculate($a, $b) {
-             return $a + $b;
-         }
-     }
-     ```
+## Utilisation
 
-3. **Gérer les erreurs spécifiques** :
-   - Dans `Division.php`, ajoutez une gestion d'exception pour éviter la division par zéro (à faire).
+1. **Exécuter une Expression** :
+   ```bash
+   php calc.php "3 + 4 * 2 / ( 1 - 5 )"
+   ```
+   Résultat attendu : `1`.
 
-### 4. Création de la Classe Principale `Calculator`
+2. **Ajouter des Tests** :
+   - Optionnellement, ajouter des tests unitaires pour valider les fonctionnalités.
 
-1. **Créer `Calculator.php`** dans `src/` :
-   - Cette classe est responsable de l'interprétation des expressions mathématiques et d'exécuter les opérations en utilisant les classes `Addition`, `Subtraction`, etc.
+---
 
-2. **Méthode `calculate` dans `Calculator.php`** :
-   - Cette méthode analyse l'expression et applique chaque opération dans l'ordre des arguments.
-   - Exemple d'utilisation :
-     ```php
-     $calculator = new Calculator();
-     echo $calculator->calculate("12 + 32 - 54");
-     ```
+## Principes Respectés
 
-### 5. Création du Fichier Principal `calc.php`
+- **SOLID** :
+  - Responsabilité unique : Chaque classe a une seule responsabilité.
+  - Ouvert/Fermé : Les classes sont ouvertes à l'extension, fermées à la modification.
+- **DRY** : Pas de duplication inutile dans le code.
+- **KISS** : Structure simple et claire.
 
-1. **Créer `calc.php` à la racine du projet** :
-   - Ce fichier est le point d’entrée pour utiliser la calculatrice en ligne de commande.
+---
 
-2. **Utilisation de `calc.php`** :
-   - Combine les arguments de la ligne de commande en une expression mathématique.
-   - Appelle la classe `Calculator` pour exécuter le calcul.
-   - Exemple de commande :
-     ```bash
-     php calc.php 12 + 32 - 54
-     ```
+## À Faire
 
-### 6. Configuration de Git
+- Ajouter des tests unitaires (PHPUnit).
+- Intégrer des fonctionnalités avancées comme les puissances ou les fonctions trigonométriques.
+- Étendre les validations pour inclure des constantes comme `pi` ou `e`.
 
-1. **Initialiser Git** :
-   - Exécutez `git init` dans le dossier du projet.
-   - Ajoutez un fichier `.gitignore` pour ignorer `vendor/` et d’autres fichiers générés.
+---
 
-2. **Commit Initial** :
-   - Commitez les fichiers du projet après chaque étape importante pour garder un historique clair.
+## Auteur
 
-### 7. Tests et Débogage
-
-1. **Tests manuels** :
-   - Testez différentes expressions pour vous assurer que chaque opération est correctement calculée.
-2. **Tests unitaires (optionnel)** :
-   - Si vous le souhaitez, ajoutez des tests unitaires dans le dossier `Tests/` en utilisant une bibliothèque comme PHPUnit pour valider les fonctionnalités.
-
-### 8. Résumé des Commandes Importantes
-
-- **`composer init`** : Initialiser Composer pour créer `composer.json`.
-- **`composer install`** : Installer les dépendances du projet.
-- **`composer dump-autoload`** : Générer l'autoloader de Composer pour charger automatiquement les classes.
-- **`php calc.php <expression>`** : Exécuter le fichier `calc.php` pour calculer une expression.
+Projet développé par **Samy Boudaoud**.
